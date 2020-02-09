@@ -1,0 +1,17 @@
+{
+  "name": "smpreview",
+  "version": "0.0.1",
+  "description": "Works with EnCiv/undebate to create social media preview images after a new candidate recording has been posted",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "iota": "git+https://github.com/EnCiv/iota.git",
+    "lodash": "^4.17.15",
+    "log4js": "git+https://github.com/ddfridley/log4js-node.git#onbrowser",
+    "mongo-models": "^3.0.2"
+  }
+}
