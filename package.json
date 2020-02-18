@@ -12,6 +12,7 @@
     "iota": "git+https://github.com/EnCiv/iota.git",
     "lodash": "^4.17.15",
     "log4js": "git+https://github.com/ddfridley/log4js-node.git#onbrowser",
-    "mongo-models": "^3.0.2"
+    "mongo-models": "^3.0.2",
+    "puppeteer": "^2.1.1"
   }
 }
