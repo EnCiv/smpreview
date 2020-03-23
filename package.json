@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "cloudinary": "^1.20.0",
     "iota": "git+https://github.com/EnCiv/iota.git",
     "lodash": "^4.17.15",
     "log4js": "git+https://github.com/ddfridley/log4js-node.git#onbrowser",
