@@ -4,38 +4,49 @@
 const sIota = require('./smpreview_iota');
 const puppeteer = require('puppeteer');
 const cloudinary = require('cloudinary').v2;
+const sleep = require('system-sleep');
 
 
 async function main() {
     try {
-        //while(1) //forever to wait for event from Enciv
+        while(1) //forever to wait for event from Enciv
         {
-            //Receive the event for Event from EnCiv, 
-            // (todo) Wait_Event_from_Enciv();
-            var parentId = '5d6350b0e7179a084ef376b9';
-
-            //Process the Event to create Smpreview.
             await sIota.connectInit();
-            console.log("receive the event, parentId:"+parentId);
-            var p = await sIota.path(parentId);
-            var site = process.env.CC_HOST + p.path;
-            //var site = 'https://undebate-stage1.herokuapp.com' + p.path;  
-            console.log("site=" +site);
-            var d = new Date();
-            var image_fname = 'site_preview_'+ d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate() +'.png';
-            await undebate_site_preview(site, image_fname);
-            
-            //unload to Cloudnary
-            var iUrl='';
-            await cloudinary.uploader.upload(image_fname, { tags: 'undebate' }, function (err, image) {
-                if (err) { console.warn(err); }
-                iUrl = image.url;
-                console.log("* File Upload to Cloudinary " + image.url);
-            });
+            // Scan DBs to find out events/parentIds which smpreviews need to be created or updated
+            var parentIds = await sIota.Get_parentId4simprview();
+            if(parentIds.length){
+                for await (const pId of parentIds) {
+                    console.log("Found a need to create or update the social preview image for parentId:"+pId.parentId );
 
-            //update smpreview record into Iota
-            await sIota.update_smpreview(parentId,iUrl);
+                    var parentId = pId.parentId;
+
+                    //Process the Event to create Smpreview.
+                    var p = await sIota.path(parentId);
+                    
+                    var site = 'https://undebate-stage1.herokuapp.com' + p.path; //debug mode, process.env does not be set in debug
+                    //var site = process.env.CC_HOST + p.path;
+                    console.log("site=" +site);
+
+                    var d = new Date();
+                    var image_fname = 'site_preview_'+ d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate() +'.png';
+                    await undebate_site_preview(site, image_fname);
+                    
+                    //unload to Cloudnary
+                    var iUrl='';
+                    await cloudinary.uploader.upload(image_fname, { tags: 'undebate' }, function (err, image) {
+                        if (err) { console.warn(err); }
+                        iUrl = image.url;
+                        console.log("* File Upload to Cloudinary " + image.url);
+                    });
+
+                    //update smpreview record into Iota
+                    await sIota.update_smpreview(parentId,iUrl);
+                };
+            }
             await sIota.disconnect();
+            //wait for 24 hrs
+            //await sleep(5000); //debug to set 5 sec.
+            await sleep(86400000);
         }
     }
     catch(err){
