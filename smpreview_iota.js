@@ -36,11 +36,10 @@ function init(){
 function disconnect(){
     MongoModels.disconnect();
 }
-function update_smpreview(pId, iUrl){
+function update_smpreview(parent, iUrl, site){
     var data = [];
     return new Promise(async (ok,ko)=>{
         try{
-            var query='{parentId: '+pId+'}';
 //          Per the discusion, all socialpreview images are kept. When generating social preview, be sure to select the lastest one.
 //          in the future, need one housekeeper to archive all Cloudinary old image and delete DB entries. 
 //          data=await Iota.findOneAndDelete(
@@ -53,9 +52,9 @@ function update_smpreview(pId, iUrl){
 //            )
             const result = await Iota.insertOne(
                 {
-                    parentId: pId, 
-                    subject: smpreview_subject, 
-                    description: smpreview_description, 
+                    parentId: parent._id.toString(), 
+                    subject: 'Social Media Preview: '+parent.subject, 
+                    description: `a social media preivew for taken from ${site}`, 
                     component: {component: 'socialpreview', imgUrl: iUrl}
                 }
             );
