@@ -25,6 +25,7 @@ async function main() {
                     console.log("Found a need to create or update the social preview image for parentId:"+pId.parentId );
 
                     var parentId = pId.parentId;
+                    if(parentId.length!==24) continue; // it's not an id, might be 'deleted'
 
                     //Process the Event to create Smpreview.
                     var parent = await sIota.path(parentId);
