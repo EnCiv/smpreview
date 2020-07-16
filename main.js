@@ -49,6 +49,7 @@ async function main() {
                     //update smpreview record into Iota
                     await sIota.update_smpreview(parent, iUrl, site);
                 };
+                console.log("updated",parentIds.length, "items.")
             }else{
                 console.info("nothing new this time around.")
             }

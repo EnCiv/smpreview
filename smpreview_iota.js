@@ -78,15 +78,15 @@ function get_parentId4smpreview() {
     var data = [];
     return new Promise(async (ok,ko)=>{
         try{
-            var lastSocalPreviews = await Iota.aggregate([
+            var lastSocialPreviews = await Iota.aggregate([
                 { $match: { 'component.component': 'socialpreview' } },
                 { $sort: { _id: -1 } },
                  {$limit: 1}
             ])
-            if(lastSocalPreviews.length) {
-                let lastSocalPreview=lastSocalPreviews[0];                   
+            if(lastSocialPreviews.length) {
+                let lastSocialPreview=lastSocialPreviews[0]._id;                   
                 data = await Iota.aggregate([
-                    { $match: {'component.component': 'MergeParticipants', parentId: {$exists: true}, _id: {$gt: lastSocalPreview} } },
+                    { $match: {'component.component': 'MergeParticipants', parentId: {$exists: true}, _id: {$gt: lastSocialPreview} } },
                     { $sort: { _id: -1 } },
                     { $group: { _id: '$userId', latest: { $first: '$$ROOT' } } },
             //      { $limit: maxParticipants },
