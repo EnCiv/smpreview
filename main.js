@@ -86,7 +86,7 @@ async function undebate_site_preview(site, image_fname) {
       ' image_file_name: ' +
       image_fname
   )
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({ args: ['--no-sandbox'] })
   const page = await browser.newPage()
   await page.setViewport({
     width: 1200,
