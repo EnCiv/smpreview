@@ -4,6 +4,7 @@
   "description": "Works with EnCiv/undebate to create social media preview images after a new candidate recording has been posted",
   "main": "main.js",
   "scripts": {
+    "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
