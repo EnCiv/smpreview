@@ -4,30 +4,40 @@ const sIota = require('./smpreview_iota')
 const puppeteer = require('puppeteer')
 const cloudinary = require('cloudinary').v2
 const sleep = require('system-sleep')
+const { socketAPIServer } = require('socket-api')
 
 if (!process.env.HOSTNAME) {
   console.error('HOSTNAME is required in env')
   process.exit(-1)
 }
 
-async function main() {
-  const HostName = process.env.HOSTNAME
-  try {
-    while (1) {
-      await scan_db(HostName)
-    }
-  } catch (err) {
-    console.error(err)
-  }
-}
+var dataIsReady = false
+var queued = []
+
+const APIs = [
+  {
+    name: 'generate_smpreview',
+    func: (year, cb) => {
+      function reply() {
+        cb()
+        logger.info('generated smpreview image')
+      }
+      if (!dataIsReady) {
+        queued.push(reply)
+      } else reply()
+    },
+  },
+]
 
 async function scan_db(HostName) {
-  //forever to wait for event from Enciv
   await sIota.connectInit()
+
   // Scan DBs to find out events/parentIds which smpreviews need to be created or updated
   var parentIds = await sIota.Get_parentId4simprview()
+
   if (parentIds.length) {
     console.info('got new records:', parentIds.length)
+
     for await (const pId of parentIds) {
       console.log(
         'Found a need to create or update the social preview image for parentId:' +
@@ -78,10 +88,8 @@ async function scan_db(HostName) {
   } else {
     console.info('nothing new this time around.')
   }
+
   await sIota.disconnect()
-  //wait for 24 hrs
-  //await sleep(5000); //debug to set 5 sec.
-  await sleep(86400000)
 }
 
 async function undebate_site_preview(site, image_fname) {
@@ -104,4 +112,19 @@ async function undebate_site_preview(site, image_fname) {
   await browser.close()
 }
 
-main()
+async function main() {
+  const HostName = process.env.HOSTNAME
+  try {
+    await scan_db(HostName)
+  } catch (err) {
+    console.error(err)
+  }
+  dataIsReady = true
+}
+
+var server
+try {
+  server = socketAPIServer(APIs, main) // main is the function that should run after the API server is started
+} catch (err) {
+  console.log(err)
+}
