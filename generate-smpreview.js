@@ -4,7 +4,7 @@ const sIota = require('./smpreview_iota')
 const puppeteer = require('puppeteer')
 const cloudinary = require('cloudinary').v2
 
-async function generateSMPreview(iota) {
+async function generateSMPreview(iota, hostname) {
   const parentId = iota.parentId
   console.log('Generating a social preview image for parentId:' + parentId)
 
